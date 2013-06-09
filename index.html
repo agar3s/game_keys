@@ -1,0 +1,30 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <style>
+      body {
+        background-color: #000;
+        color: #0a0;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Game Keys sample</h1>
+    <canvas width=400 height=300></canvas>
+    <ul>
+    </ul>
+      <li>UP <span id="UP"></span></li>
+      <li>LEFT <span id="LEFT"></span></li>
+      <li>DOWN <span id="DOWN"></span></li>
+      <li>RIGHT <span id="RIGHT"></span></li>
+    <script src="gkeys.js"></script>
+    <script>
+      gKeys.keyDown(function(keys){
+        for(key in keys){
+          console.log(key);
+          document.getElementById(key).innerHTML = keys[key];
+        }
+      }); 
+    </script>
+  </body>
+</html>
