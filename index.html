@@ -11,18 +11,43 @@
   <body>
     <h1>Game Keys sample</h1>
     <canvas width=400 height=300></canvas>
-    <ul>
-    </ul>
-      <li>UP <span id="UP"></span></li>
-      <li>LEFT <span id="LEFT"></span></li>
-      <li>DOWN <span id="DOWN"></span></li>
-      <li>RIGHT <span id="RIGHT"></span></li>
+    <table>
+      <tr>
+        <td>UP</td>
+        <td id="UPd"></td>
+        <td id="UPu"></td>
+        <td id="UPp"></td>
+      </tr>
+        <td>LEFT</td>
+        <td id="LEFTd"></td>
+        <td id="LEFTu"></td>
+        <td id="LEFTp"></td>
+      </tr>
+        <td>DOWN</td>
+        <td id="DOWNd"></td>
+        <td id="DOWNu"></td>
+        <td id="DOWNp"></td>
+      </tr>
+        <td>RIGHT</td>
+        <td id="RIGHTd"></td>
+        <td id="RIGHTu"></td>
+        <td id="RIGHTp"></td>
+      </tr>
+    </table>
     <script src="gkeys.js"></script>
     <script>
       gKeys.keyDown(function(keys){
         for(key in keys){
-          console.log(key);
-          document.getElementById(key).innerHTML = keys[key].down;
+          document.getElementById(key+'d').innerHTML = keys[key].d;
+          document.getElementById(key+'u').innerHTML = keys[key].u;
+          document.getElementById(key+'p').innerHTML = keys[key].p;
+        }
+      });
+      gKeys.keyUp(function(keys){
+        for(key in keys){
+          document.getElementById(key+'d').innerHTML = keys[key].d;
+          document.getElementById(key+'u').innerHTML = keys[key].u;
+          document.getElementById(key+'p').innerHTML = keys[key].p;
         }
       }); 
     </script>
