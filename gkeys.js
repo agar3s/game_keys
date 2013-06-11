@@ -16,6 +16,7 @@
         canvas,
         kdCallback = function( keys ){},
         kuCallback = function( keys ){};
+    var custom_thread = false;
 
 
     var mapping = function( key, down ){
@@ -38,9 +39,11 @@
     };
 
     var scanKeys = function(){
+      if(!custom_thread && arguments.callee.caller.name !== 'gScanning'){
+        custom_thread = true;
+      }
       var callUp = false,
           callDown = false;
-
       for(key in keys){
         if (!keys.hasOwnProperty(key)) continue;
         keys[key].p = keys[key].d ? keys[key].p+1 : 0;
@@ -63,9 +66,11 @@
       canvas.focus();
     })();
     
-    (function scanning(){
-      scanKeys();  
-      window.setTimeout(scanning, 1000 / 60);
+    (function gScanning(){
+      if(!custom_thread){
+        scanKeys();
+        window.setTimeout(gScanning, 1000 / 60);
+      }
     })();
 
     return {
@@ -74,7 +79,8 @@
       },
       'keyUp': function( callback ){
         kuCallback = callback;
-      }
+      },
+      'scanKeys': scanKeys,
     };
 
   }();
