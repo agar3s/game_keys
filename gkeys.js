@@ -88,12 +88,27 @@
         };
         link.onmousedown = function(event){
           mapping(this.id, true);
+
+          return false;
         };
         link.onmouseup = function(event){
           mapping(this.id, false);
+          canvas.focus();
+          return false;
         };
+        link.addEventListener("touchstart", function(e){
+            mapping(this.id, true);
+            e.preventDefault();//Stops the default behavior
+        }, false);
+        link.addEventListener("touchend", function(e){
+          mapping(this.id, true);
+          e.preventDefault();//Stops the default behavior
+          canvas.focus();
+        }, false);
+
       }
     })();
+
     
     (function gScanning(){
       if(!custom_thread){
