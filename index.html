@@ -25,7 +25,7 @@
   </head>
   <body>
     <h1>Game Keys sample</h1>
-    <canvas width=400 height=300></canvas>
+    <canvas id="canvas" width=400 height=300></canvas>
     <table>
       <tr>
         <td>UP</td>
@@ -69,11 +69,34 @@
 
     <script src="gkeys.js"></script>
     <script>
+      //paint in the canvas:
+      var ctx = document.getElementById('canvas').getContext('2d'),
+          x = 55,
+          y = 50;
+          color= "rgba(50, 200, 50, 0.5)";
+
       gKeys.keyDown(function(keys){
         for(key in keys){
           document.getElementById(key+'d').innerHTML = keys[key].d;
           document.getElementById(key+'u').innerHTML = keys[key].u;
           document.getElementById(key+'p').innerHTML = keys[key].p;
+        }
+        if(keys.DOWN.d){
+          y += 2;
+        }
+        if(keys.UP.d){
+          y -= 2;
+        }
+        if(keys.LEFT.d){
+          x -= 2;
+        }
+        if(keys.RIGHT.d){
+          x += 2;
+        }
+        if(keys.SPACE.d){
+          color = "rgb("+Math.floor(Math.random()*255)+
+                               ","+Math.floor(Math.random()*255)+
+                               ","+Math.floor(Math.random()*255)+")";
         }
       });
       gKeys.keyUp(function(keys){
@@ -94,9 +117,17 @@
     })();
     // if you define a custom thread to update your canvas you can invoke the gKeys.scanKeys 
     // function to manage the key mapping at the same time that your game loop
+
+
     (function animloop(){
       requestAnimFrame(animloop);
       gKeys.scanKeys();
+      ctx.fillStyle = "rgba(0, 10, 0, 0.9)";
+      ctx.fillRect (5, 5, 390, 290);
+      ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+      ctx.fillRect (100, 100, 60, 60);
+      ctx.fillStyle = color;
+      ctx.fillRect (x, y, 30, 30);
     })();
     </script>
   </body>
