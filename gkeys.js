@@ -1,17 +1,30 @@
 (function(window, document, undefined){
 
   var gKeys = function(){
+    var Key = function(){
+      this.d = false;
+      this.u = false;
+      this.p = 0;
+    };
     var keys = {
-                UP: {d:false, u:false, p:0},
-                DOWN: {d:false, u:false, p:0},
-                LEFT: {d:false, u:false, p:0},
-                RIGHT: {d:false, u:false, p:0}
+                UP: new Key(),
+                DOWN: new Key(),
+                LEFT: new Key(),
+                RIGHT: new Key(),
+                SPACE: new Key()
                },
         mapKeys = {
                   37: 'LEFT',
                   38: 'UP',
                   39: 'RIGHT',
-                  40: 'DOWN'
+                  40: 'DOWN',
+                  32: 'SPACE',
+                  //virtual keys
+                  'vk_left': 'LEFT',
+                  'vk_up': 'UP',
+                  'vk_right': 'RIGHT',
+                  'vk_down': 'DOWN',
+                  'vk_space': 'SPACE',
                 },
         canvas,
         kdCallback = function( keys ){},
@@ -39,11 +52,12 @@
     };
 
     var scanKeys = function(){
+      var callUp = false,
+          callDown = false;
+
       if(!custom_thread && arguments.callee.caller.name !== 'gScanning'){
         custom_thread = true;
       }
-      var callUp = false,
-          callDown = false;
       for(key in keys){
         if (!keys.hasOwnProperty(key)) continue;
         keys[key].p = keys[key].d ? keys[key].p+1 : 0;
@@ -64,6 +78,21 @@
       canvas.addEventListener('keydown',  keyDowns);
       canvas.addEventListener('keyup',  keyUps);
       canvas.focus();
+
+      //if virtualkeys
+      var collection = document.getElementById('virtualKeys').children;
+      for(var i = 0; i<collection.length; i++){
+        var link = collection[i];
+        link.onclick = function(event){
+          return false;
+        };
+        link.onmousedown = function(event){
+          mapping(this.id, true);
+        };
+        link.onmouseup = function(event){
+          mapping(this.id, false);
+        };
+      }
     })();
     
     (function gScanning(){
