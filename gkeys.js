@@ -101,9 +101,8 @@
             e.preventDefault();
         }, false);
         link.addEventListener("touchend", function(e){
-          mapping(this.id, true);
+          mapping(this.id, false);
           e.preventDefault();
-          canvas.focus();
         }, false);
 
       }
