@@ -98,11 +98,11 @@
         };
         link.addEventListener("touchstart", function(e){
             mapping(this.id, true);
-            e.preventDefault();//Stops the default behavior
+            e.preventDefault();
         }, false);
         link.addEventListener("touchend", function(e){
           mapping(this.id, true);
-          e.preventDefault();//Stops the default behavior
+          e.preventDefault();
           canvas.focus();
         }, false);
 
