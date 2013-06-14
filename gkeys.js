@@ -114,7 +114,7 @@
       canvas.addEventListener('keyup',  keyUps);
       canvas.focus();
 
-      if(isMobile()){
+      if(isMobile()||true){
         //load virtual keyboard
         var virtualKeyboard = document.createElement('div');
         virtualKeyboard.id="virtualKeys";
