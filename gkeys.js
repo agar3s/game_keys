@@ -20,11 +20,11 @@
                   40: 'DOWN',
                   32: 'SPACE',
                   //virtual keys
-                  'vk_left': 'LEFT',
-                  'vk_up': 'UP',
-                  'vk_right': 'RIGHT',
-                  'vk_down': 'DOWN',
-                  'vk_space': 'SPACE',
+                  'vkLeft': 'LEFT',
+                  'vkUp': 'UP',
+                  'vkRight': 'RIGHT',
+                  'vkDown': 'DOWN',
+                  'vkSpace': 'SPACE',
                 },
         canvas,
         kdCallback = function( keys ){},
@@ -118,11 +118,11 @@
         //load virtual keyboard
         var virtualKeyboard = document.createElement('div');
         virtualKeyboard.id="virtualKeys";
-        virtualKeyboard.innerHTML = '<button id="vk_space">SPACE</button>'+
-                               '<button id="vk_up">UP</button>'+
-                               '<button id="vk_down">DOWN</button>'+
-                               '<button id="vk_left">LEFT</button>'+
-                               '<button id="vk_right">RIGHT</button>';
+        virtualKeyboard.innerHTML = '<button class="vk" id="vkSpace"></button>'+
+                               '<button class="vk" id="vkUp"></button>'+
+                               '<button class="vk" id="vkDown"></button>'+
+                               '<button class="vk" id="vkLeft"></button>'+
+                               '<button class="vk" id="vkRight"></button>';
         document.body.appendChild(virtualKeyboard);
 
         //if virtualkeys

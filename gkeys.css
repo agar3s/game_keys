@@ -1,0 +1,70 @@
+.vk {
+  background-color: transparent;
+  position: absolute;
+  bottom: 0;
+  display: block;
+  width: 50px;
+  height: 50px;
+  text-transform: hide;
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+#vkSpace {
+  right:50px;
+  bottom: 50px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+#vkSpace:active {
+  background-color: rgba(200, 255, 200, 0.6);
+}
+
+#vkLeft {
+  left: 0;
+  bottom: 50px;
+  border-right: 50px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 25px solid transparent;
+  border-top: 25px solid transparent;
+}
+
+#vkLeft:active {
+  border-right-color: rgba(200, 255, 200, 0.6);
+}
+
+#vkUp {
+  left: 50px;
+  bottom: 100px;
+  border-left: 25px solid transparent;
+  border-right: 25px solid transparent;
+  border-bottom: 50px solid rgba(255, 255, 255, 0.2);
+}
+
+#vkUp:active {
+  border-bottom-color: rgba(200, 255, 200, 0.6);
+}
+
+#vkRight {
+  left: 100px;
+  bottom: 50px;
+  border-left: 50px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 25px solid transparent;
+  border-top: 25px solid transparent;
+}
+
+#vkRight:active {
+  border-left-color: rgba(200, 255, 200, 0.6);
+}
+
+#vkDown {
+  left: 50px;
+  border-left: 25px solid transparent;
+  border-right: 25px solid transparent;
+  border-top: 50px solid rgba(255, 255, 255, 0.2);
+}
+
+#vkDown:active {
+  border-top-color: rgba(200, 255, 200, 0.6);
+}
