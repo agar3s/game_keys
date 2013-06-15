@@ -29,7 +29,8 @@
         canvas = null,
         kdCallback = function( keys ){},
         kuCallback = function( keys ){},
-        custom_thread = false,
+        customThread = false,
+        allowsHistory = true,
         history = [],
         maxHistory = 10,
         maxTime = 100;
@@ -58,39 +59,58 @@
       var callUp = false,
           callDown = false;
 
-      if(!custom_thread && arguments.callee.caller.name !== 'gScanning'){
-        custom_thread = true;
+      if(!customThread && arguments.callee.caller.name !== 'gScanning'){
+        customThread = true;
       }
+
       for(key in keys){
         if (!keys.hasOwnProperty(key)) continue;
         keys[key].p = keys[key].d ? keys[key].p+1 : keys[key].p;
         callDown = callDown || keys[key].d;
         callUp = callUp || keys[key].u;
       }
+
       if(callDown){
         kdCallback(keys);
       }
+
       if(callUp){
-        kuCallback(keys);
         var localKeys = {};
+        kuCallback(keys);
         for(key in keys){
           if (!keys.hasOwnProperty(key)) continue;
+
           if(keys[key].u){
-            localKeys[key] = maxTime;
             keys[key].u = false;
             keys[key].p = 0;
+            if(allowsHistory){
+              localKeys[key] = maxTime;
+            }
           }
         }
-        history.splice(0, 0, localKeys);
-        while(history.length > maxHistory){
-          history.pop();
+
+        if(allowsHistory){
+          addHistoryRecord(localKeys);
         }
       }
       
-      //clean history
+      if(allowsHistory){
+        cleanHistory();  
+      }
+    };
+
+    //history 
+    var addHistoryRecord = function(localKeys){
+      history.splice(0, 0, localKeys);
+      while(history.length > maxHistory){
+        history.pop();
+      }
+    };
+    var cleanHistory = function(){
       for(keysHistory in history){
         for(key in history[keysHistory]){
           if (!history[keysHistory].hasOwnProperty(key)) continue;
+          
           history[keysHistory][key]--;
           if(history[keysHistory][key] < 0){
             history.pop();  
@@ -98,7 +118,6 @@
           }
         }
       }
-
     };
 
     var isMobile = function(){
@@ -186,7 +205,7 @@
 
     
     (function gScanning(){
-      if(!custom_thread){
+      if(!customThread){
         scanKeys();
         window.setTimeout(gScanning, 1000 / 60);
       }
