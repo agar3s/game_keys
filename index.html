@@ -8,6 +8,7 @@
     <meta name='viewport' content='width=device-width, initial-scale=1'>
     <style>
       body {
+        padding: 0;
         background-color: #000;
         color: #0a0;
       }
@@ -15,7 +16,8 @@
         color: #010;
       }
       .pressed {
-        background-color: blue;
+        background-color: #0a0;
+        color: #000;
       }
     </style>
     <link rel='stylesheet' href='gkeys.css'>
@@ -64,9 +66,17 @@
       //paint in the canvas:
       var ctx = document.getElementById('canvas').getContext('2d'),
           x = 55,
-          y = 50;
-          color= 'rgba(50, 200, 50, 0.5)',
-          rowClass = '';
+          y = 50,
+          speed = 3;
+          color = 'rgba(255, 255, 50, 0.5)',
+          rowClass = '',
+          characters = {
+            'UP':'&uarr;',
+            'DOWN':'&darr;',
+            'LEFT':'&larr;',
+            'RIGHT':'&rarr;',
+            'SPACE':'&hearts;'
+          };
 
       gKeys.keyDown(function(keys){
         for(key in keys){
@@ -77,31 +87,50 @@
           document.getElementById(key).setAttribute('class', rowClass);
         }
         if(keys.DOWN.d){
-          y += 2;
+          y += speed;
+          if(y > 300){
+            y = -30;
+          }
         }
         if(keys.UP.d){
-          y -= 2;
+          y -= speed;
+          if(y < -30){
+            y = 300;
+          }
         }
         if(keys.LEFT.d){
-          x -= 2;
+          x -= speed;
+          if(x < -30){
+            x = 400;
+          }
         }
         if(keys.RIGHT.d){
-          x += 2;
+          x += speed;
+          if(x > 400){
+            x = -30;
+          }
         }
         if(keys.SPACE.d){
-          color = 'rgb('+Math.floor(Math.random()*255)+
-                               ','+Math.floor(Math.random()*255)+
-                               ','+Math.floor(Math.random()*255)+')';
+          var cr = Math.floor(Math.random()*255);
+          var cg = Math.floor(Math.random()*255);
+          var cb = Math.floor(Math.random()*255);
+          var ca = Math.random();
+          color = 'rgba('+cr+','+cg+','+cb+','+ca+')';
+          speed = 6;
         }
+        moveSky(keys);
       });
       gKeys.keyUp(function(keys){
         for(key in keys){
           document.getElementById(key+'d').innerHTML = keys[key].d;
           document.getElementById(key+'u').innerHTML = keys[key].u;
           document.getElementById(key+'p').innerHTML = keys[key].p;
-          if(keys[key].u===true){
+          if(keys[key].u){
             document.getElementById(key).setAttribute('class', '');
           }
+        }
+        if(keys.SPACE.u){
+          speed = 3;
         }
       });
 
@@ -117,21 +146,70 @@
     // function to manage the key mapping at the same time that your game loop
 
 
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+
+    var stars = [];
+    (function(){
+      for(var i = 0; i<200; i++){
+        stars.push({x:Math.floor(Math.random()*800), y:Math.floor(Math.random()*600)});
+      }
+    })();
+    var drawSky = function(ctx){
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+      for(var i = 0; i<stars.length; i++){
+        ctx.fillRect (stars[i].x, stars[i].y+2, 1, 1);
+        ctx.fillRect (stars[i].x, stars[i].y-2, 1, 1);
+        ctx.fillRect (stars[i].x-2, stars[i].y, 1, 1);
+        ctx.fillRect (stars[i].x+2, stars[i].y, 1, 1);
+      }
+    }
+    var moveSky = function(keys){
+      for(var i = 0; i<stars.length; i++){
+        if(keys.UP.d){
+          stars[i].y += speed/2;
+          if(stars[i].y > 600){
+            stars[i].y = 0;
+          }
+        }
+        if(keys.DOWN.d){
+          stars[i].y -= speed/2;
+          if(stars[i].y < 0){
+            stars[i].y = 600;
+          }
+        }
+        if(keys.RIGHT.d){
+          stars[i].x -= speed/2;
+          if(stars[i].x < 0){
+            stars[i].x = 800;
+          }
+        }
+        if(keys.LEFT.d){
+          stars[i].x += speed/2;
+          if(stars[i].x > 800){
+            stars[i].x = 0;
+          }
+        }
+      }
+    }
+    ctx.fillStyle = 'green';
+    ctx.fillRect (0, 0, 400, 300);
+    var image = new Image();
+    image.src = 'nyan-cat.png';
     (function animloop(){
       requestAnimFrame(animloop);
       gKeys.scanKeys();
-      ctx.fillStyle = 'rgba(0, 10, 0, 0.9)';
-      ctx.fillRect (5, 5, 390, 290);
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-      ctx.fillRect (100, 100, 60, 60);
+      ctx.fillStyle = 'rgba(0, 0, 5, 0.05)';
+      ctx.fillRect (0, 0, 400, 300);
+      drawSky(ctx);
+      
       ctx.fillStyle = color;
-      ctx.fillRect (x, y, 30, 30);
+      ctx.fillRect (x, y, 35, 35);
       var keysHistory = '';
       var keysLocal = '';
       for(var i = gKeys.history.length-1; i>=0; i--){
-        keysLocal = '(';
+        keysLocal = '( ';
         for(key in gKeys.history[i]){
-          keysLocal += key + ' ';
+          keysLocal += characters[key] + ' ';
         }
         keysLocal += ')'
         keysHistory += keysLocal + ' ';
