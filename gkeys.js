@@ -1,19 +1,20 @@
 (function(window, document, undefined){
 
   var gKeys = function(){
+    //the Key object
     var Key = function(){
-      this.d = false;
-      this.u = false;
-      this.p = 0;
+      this.d = false; //down state
+      this.u = false; //up state
+      this.p = 0;     //pressed time
     };
-    var keys = {
+    var keys = {                        //the avalaible keys
                 UP: new Key(),
                 DOWN: new Key(),
                 LEFT: new Key(),
                 RIGHT: new Key(),
                 SPACE: new Key()
                },
-        mapKeys = {
+        mapKeys = {                     //key codes for the keys
                   37: 'LEFT',
                   38: 'UP',
                   39: 'RIGHT',
@@ -26,16 +27,21 @@
                   'vkDown': 'DOWN',
                   'vkSpace': 'SPACE',
                 },
-        canvas = null,
-        kdCallback = function( keys ){},
-        kuCallback = function( keys ){},
-        customThread = false,
-        allowsHistory = true,
-        history = [],
-        maxHistory = 10,
-        maxTime = 100;
+        canvas = null,                  //the canvas object
+        kdCallback = function( keys ){},//key down callback function
+        kuCallback = function( keys ){},//key up callback function
+        customThread = false,           //true if the scanKeys function is managed by another tread
+        allowsHistory = true,           //allows the history functions, required for the moves function
+        history = [],                   //register of the last key ups
+        maxHistory = 10,                //maximun keys allowed in the history array
+        maxTime = 100,                  //time a key is in the history, in loop cycles
+        moveList = [],                  //a list with the moves registered
+        minimalList = maxHistory;       //minimal keys in the history neccesary to do a move inspection
 
 
+    //inspect changes in the keys object
+    //key: the key code
+    //down: if the key is down or up
     var mapping = function( key, down ){
       if(key in mapKeys){
         keys[mapKeys[key]].d = down;
@@ -43,13 +49,13 @@
       }
     };
 
-    var keyDowns = function( e ){
+    var keyDowns = function(e){
       var key = e.keyCode ? e.keyCode : e.which;
       mapping(key, true);
       e.preventDefault();
     };
 
-    var keyUps = function( e ){
+    var keyUps = function(e){
       var key = e.keyCode ? e.keyCode : e.which;
       mapping(key, false);
       e.preventDefault();
@@ -102,6 +108,7 @@
     //history 
     var addHistoryRecord = function(localKeys){
       history.splice(0, 0, localKeys);
+      validateMoves();
       while(history.length > maxHistory){
         history.pop();
       }
@@ -120,6 +127,55 @@
       }
     };
 
+    //Moves
+    var Move = function(){
+      this.sequence = [],
+      this.callback = function(){};
+    };
+
+    var registerMove = function(sequence, callback){
+      var move = new Move(),
+          added = false;
+      move.sequence = sequence;
+      move.callback = callback;
+
+      for (var i = 0; i < moveList.length; i++) {
+        if(move.sequence.length > moveList[i].sequence.length){
+          moveList.splice(i, 0, move);
+          added = true;
+          break;
+        }
+      };
+      if(!added){
+        moveList.push(move);
+      }
+      if(sequence.length < minimalList){
+        minimalList = sequence.length;
+      }
+    }
+    
+    var validateMoves = function(){
+      var move, isMove, sequence, sequenceLength;
+      if(history.length < minimalList) return;
+
+      for(var i = 0; i < moveList.length; i++){
+        move = moveList[i];
+        isMove = true;
+        sequence = move.sequence;
+        sequenceLength = sequence.length-1;
+        if(history.length <= sequenceLength) continue;
+
+        for(var j = 0; j <= sequenceLength; j++){
+          isMove = isMove && history[j][sequence[sequenceLength-j]];
+        }
+        if(isMove){
+          move.callback();
+          return;
+        }
+      }
+    }
+
+    //virtual keyBoard
     var isMobile = function(){
       var regexp1 = new RegExp('/(android|bb\d+|meego).+mobile|avantgo|bada\/'+
                 '|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)'+
@@ -218,6 +274,7 @@
       'keyUp': function( callback ){
         kuCallback = callback;
       },
+      'registerMove': registerMove,
       'scanKeys': scanKeys,
       'history': history
     };
