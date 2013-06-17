@@ -77,7 +77,17 @@
             'LEFT':'&larr;',
             'RIGHT':'&rarr;',
             'SPACE':'&hearts;'
-          };
+          },
+          pressedTime = 3,
+          sky = {
+            color:'rgba(0, 0, 5, 0.05)',
+            stars:'rgba(255, 255, 255, 0.3)'
+          },
+          skyThemes = [{color:'rgba(0, 0, 5, 0.05)', stars:'rgba(255, 255, 255, 0.3)'},
+                     {color:'rgba(255, 255, 255, 0.05)', stars:'rgba(0, 0, 0, 0.3)'},
+                     {color:'rgba(255, 186, 32, 0.05)', stars:'rgba(0, 61, 178, 0.3)'},
+                     {color:'rgba(50, 0, 51, 0.05)', stars:'rgba(138, 255, 65, 0.3)'}],
+          skyIndex = 0;
 
       gKeys.keyDown(function(keys){
         for(key in keys){
@@ -87,31 +97,31 @@
           rowClass = keys[key].d && keys[key].p > 15 ?'pressed':'';
           document.getElementById(key).setAttribute('class', rowClass);
         }
-        if(keys.DOWN.d){
+        if(keys.DOWN.d && keys.DOWN.p>pressedTime){
           y += speed;
           if(y > 300){
             y = -30;
           }
         }
-        if(keys.UP.d){
+        if(keys.UP.d && keys.UP.p>pressedTime){
           y -= speed;
           if(y < -30){
             y = 300;
           }
         }
-        if(keys.LEFT.d){
+        if(keys.LEFT.d && keys.LEFT.p>pressedTime){
           x -= speed;
           if(x < -30){
             x = 400;
           }
         }
-        if(keys.RIGHT.d){
+        if(keys.RIGHT.d && keys.RIGHT.p>pressedTime){
           x += speed;
           if(x > 400){
             x = -30;
           }
         }
-        if(keys.SPACE.d){
+        if(keys.SPACE.d && keys.SPACE.p>pressedTime){
           var cr = Math.floor(Math.random()*255);
           var cg = Math.floor(Math.random()*255);
           var cb = Math.floor(Math.random()*255);
@@ -133,6 +143,27 @@
         if(keys.SPACE.u){
           speed = 3;
         }
+      });
+      var hadouken = function(){
+        //create a wave!
+        waves.splice(0, 0, {x:x+15, y: y+15, color:color, radius:0});
+      };
+      var shoryuken = function(){
+        skyIndex++;
+        if(skyIndex>=skyThemes.length){
+          skyIndex = 0;
+        }
+        sky = skyThemes[skyIndex];
+      };
+      gKeys.registerMove(['DOWN', 'RIGHT', 'SPACE'], hadouken);
+      gKeys.registerMove(['DOWN', 'LEFT', 'SPACE'], hadouken);
+      gKeys.registerMove(['RIGHT', 'DOWN', 'RIGHT', 'SPACE'], shoryuken);
+      gKeys.registerMove(['LEFT', 'DOWN', 'LEFT', 'SPACE'], shoryuken);
+      gKeys.registerMove(['UP', 'UP', 'DOWN', 'DOWN', 'LEFT', 'RIGHT', 'LEFT', 'RIGHT', 'SPACE', 'SPACE'], function(){
+        window.alert('\tYou are so geek!!,\n'+
+          'I\'ve appreciate your effort,\n'+
+          'this is my twitter account @agar3s\n'+
+          'if you want to talk with me about this project. =D');
       });
 
     window.requestAnimFrame = (function(){
@@ -156,7 +187,7 @@
       }
     })();
     var drawSky = function(ctx){
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+      ctx.fillStyle = sky.stars;
       for(var i = 0; i<stars.length; i++){
         ctx.fillRect (stars[i].x, stars[i].y+2, 1, 1);
         ctx.fillRect (stars[i].x, stars[i].y-2, 1, 1);
@@ -192,17 +223,35 @@
         }
       }
     }
-    ctx.fillStyle = 'green';
+
+    var waves = [];
+    var border = 6;
+    var maxRadius = 800;
+    var drawWaves = function(ctx){
+      var wave ={};
+      for(var i= 0; i <waves.length; i++){
+        wave = waves[i];
+        wave.radius += border*2;
+        if(wave.radius>maxRadius){
+          waves.pop();
+          break;
+        }
+        ctx.fillStyle = wave.color;
+        ctx.fillRect(wave.x-wave.radius/2, wave.y-wave.radius/2, wave.radius, border);
+        ctx.fillRect(wave.x-wave.radius/2, wave.y+wave.radius/2-border, wave.radius, border);
+        ctx.fillRect(wave.x-wave.radius/2, wave.y-wave.radius/2+border, border, wave.radius-border*2);
+        ctx.fillRect(wave.x+wave.radius/2-border, wave.y-wave.radius/2+border, border, wave.radius-border*2);
+      }
+    }
+
+    ctx.fillStyle = 'black';
     ctx.fillRect (0, 0, 400, 300);
-    var image = new Image();
-    image.src = 'nyan-cat.png';
     (function animloop(){
-      requestAnimFrame(animloop);
       gKeys.scanKeys();
-      ctx.fillStyle = 'rgba(0, 0, 5, 0.05)';
-      ctx.fillRect (0, 0, 400, 300);
+      ctx.fillStyle = sky.color;
+      ctx.fillRect(0, 0, 400, 300);
       drawSky(ctx);
-      
+      drawWaves(ctx);
       ctx.fillStyle = color;
       ctx.fillRect (x, y, 35, 35);
       var keysHistory = '';
@@ -217,6 +266,7 @@
       }
 
       document.getElementById('history').innerHTML = keysHistory;
+      requestAnimFrame(animloop);
     })();
     </script>
   </body>
