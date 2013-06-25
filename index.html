@@ -91,37 +91,37 @@
 
       gKeys.keyDown(function(keys){
         for(key in keys){
-          document.getElementById(key+'d').innerHTML = keys[key].d;
-          document.getElementById(key+'u').innerHTML = keys[key].u;
-          document.getElementById(key+'p').innerHTML = keys[key].p;
-          rowClass = keys[key].d && keys[key].p > 15 ?'pressed':'';
+          document.getElementById(key+'d').innerHTML = keys[key].down;
+          document.getElementById(key+'u').innerHTML = keys[key].up;
+          document.getElementById(key+'p').innerHTML = keys[key].pressed;
+          rowClass = keys[key].down && keys[key].pressed > 15 ?'pressed':'';
           document.getElementById(key).setAttribute('class', rowClass);
         }
-        if(keys.DOWN.d && keys.DOWN.p>pressedTime){
+        if(keys.DOWN.down && keys.DOWN.pressed>pressedTime){
           y += speed;
           if(y > 300){
             y = -30;
           }
         }
-        if(keys.UP.d && keys.UP.p>pressedTime){
+        if(keys.UP.down && keys.UP.pressed>pressedTime){
           y -= speed;
           if(y < -30){
             y = 300;
           }
         }
-        if(keys.LEFT.d && keys.LEFT.p>pressedTime){
+        if(keys.LEFT.down && keys.LEFT.pressed>pressedTime){
           x -= speed;
           if(x < -30){
             x = 400;
           }
         }
-        if(keys.RIGHT.d && keys.RIGHT.p>pressedTime){
+        if(keys.RIGHT.down && keys.RIGHT.pressed>pressedTime){
           x += speed;
           if(x > 400){
             x = -30;
           }
         }
-        if(keys.SPACE.d && keys.SPACE.p>pressedTime){
+        if(keys.SPACE.down && keys.SPACE.pressed>pressedTime){
           var cr = Math.floor(Math.random()*255);
           var cg = Math.floor(Math.random()*255);
           var cb = Math.floor(Math.random()*255);
@@ -133,14 +133,14 @@
       });
       gKeys.keyUp(function(keys){
         for(key in keys){
-          document.getElementById(key+'d').innerHTML = keys[key].d;
-          document.getElementById(key+'u').innerHTML = keys[key].u;
-          document.getElementById(key+'p').innerHTML = keys[key].p;
-          if(keys[key].u){
+          document.getElementById(key+'d').innerHTML = keys[key].down;
+          document.getElementById(key+'u').innerHTML = keys[key].up;
+          document.getElementById(key+'p').innerHTML = keys[key].pressed;
+          if(keys[key].up){
             document.getElementById(key).setAttribute('class', '');
           }
         }
-        if(keys.SPACE.u){
+        if(keys.SPACE.up){
           speed = 3;
         }
       });
@@ -197,25 +197,25 @@
     }
     var moveSky = function(keys){
       for(var i = 0; i<stars.length; i++){
-        if(keys.UP.d){
+        if(keys.UP.down){
           stars[i].y += speed/2;
           if(stars[i].y > 600){
             stars[i].y = 0;
           }
         }
-        if(keys.DOWN.d){
+        if(keys.DOWN.down){
           stars[i].y -= speed/2;
           if(stars[i].y < 0){
             stars[i].y = 600;
           }
         }
-        if(keys.RIGHT.d){
+        if(keys.RIGHT.down){
           stars[i].x -= speed/2;
           if(stars[i].x < 0){
             stars[i].x = 800;
           }
         }
-        if(keys.LEFT.d){
+        if(keys.LEFT.down){
           stars[i].x += speed/2;
           if(stars[i].x > 800){
             stars[i].x = 0;
@@ -246,6 +246,7 @@
 
     ctx.fillStyle = 'black';
     ctx.fillRect (0, 0, 400, 300);
+    
     (function animloop(){
       gKeys.scanKeys();
       ctx.fillStyle = sky.color;
