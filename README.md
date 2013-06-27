@@ -36,22 +36,23 @@ A key is an object with the information about the state of the key:
 
 ```javascript
     var Key = function(){
-        this.down = false;                          // down state
-        this.pressed = 0;                           // pressed time
-        this.isReleased = function(){               // check if the key was just released
-            return !this.down && this.pressed!=0
-        };
+        this.down = false;
+        this.startTime = 0;
+        this.finalTime = 0;
     };
 ```
 
 The **key.down** is a boolean with the down state of the key, while the key is pressed 
 the **key.down** will be true otherwise its value will be false.
 
-The **key.pressed** is an int value, that counts how many cycles the key has been 
-pressed, its value is incremented while the **key.down** is true, it stops the count 
-when the key.up is false, then its value returns to 0.
+The **key.startTime** is a timestamp value, that marks the time when the key has
+been pressed.
 
-The **key.isReleased** is a function that evaluates if the key was just released.
+The **key.finalTime** is a timestamp value, that marks the time when the key has
+been released, its value returns to 0 when the key is pressed.
+
+You can find the amoung of time in miliseconds a key were pressed subtracting the
+**key.finalTime** - **key.startTime**.
 
 
 ### Key Down events
@@ -62,8 +63,7 @@ you need to pass a callback function that recieves the state of the keys as a js
 ```javascript
 gKeys.keyDown(function(keys){
     console.log("key LEFT down: " + keys.LEFT.down);
-    console.log("key LEFT up: " + keys.LEFT.up);
-    console.log("key LEFT pressed time: " + keys.LEFT.pressed);
+    console.log("key LEFT startTime: " + keys.LEFT.startTime);
 });
 ```
 
@@ -77,32 +77,14 @@ Right now you can access the following keys:
 
 ### Key Up events
 
-A keyup event is triggered when a mapping key is pressed. and works like the keyDown event:
+A keyup event is triggered when a mapping key is released. and works like the keyDown event:
 
 ```javascript
 gKeys.keyUp(function(keys){
-    console.log("key LEFT down: " + keys.LEFT.down);
-    console.log("key LEFT up: " + keys.LEFT.up);
-    console.log("key LEFT pressed time: " + keys.LEFT.pressed);
+    console.log("key LEFT up: " + !keys.LEFT.down);
+    console.log("key LEFT final Time: " + keys.LEFT.finalTime);
+    console.log("key LEFT total pressed time: " + (keys.LEFT.finalTime - keys.LEFT.startTime));
 });
-```
-
-
-### Scanning keys
-
-To scan the different states of the keys, **gKeys** uses a default loop to discover 
-what changes the mapping keys have, but if you want to sincronize your game events 
-with the keys events you can use your own loop that manages your game cycles calling 
-the **gKeys.scanKeys()** function into the loop:
-
-```javascript
-// your game loop 
-    (function animloop(){
-        ...
-        gKeys.scanKeys(); //just add this
-        ...
-        requestAnimFrame(animloop);
-    })();
 ```
 
 ## Virtual Keyboard
@@ -134,10 +116,10 @@ for example:
 ```
 
 The log history has a maximun of 10 keys allowed in the history array and every keys allowed
-lives in the log history for a 100 cycles.
+lives in the log history for a 1000 miliseconds.
 
 for example: if you pressed the DOWN key the DOWN key will be stored in the log history, 
-100 cycles later this log will be destroyed.
+1000 miliseconds later this log will be destroyed.
 
 
 ### Configuration
@@ -145,7 +127,7 @@ for example: if you pressed the DOWN key the DOWN key will be stored in the log 
 If you need to manage more elements in the history modify the **maxHistory** property
 in the library (I have pending a configuration params)
 
-Likewise if you want to allow your history for more cycles, modify the **maxTime** 
+Likewise if you want to allow your history for more time, modify the **maxTime** 
 property in the library.
 
 Finally if you don't want to use the history capabilities you can disable it, modifying 

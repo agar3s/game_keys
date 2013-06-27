@@ -3,11 +3,14 @@
   var gKeys = function(){
     //the Key object
     var Key = function(){
-      this.down = false;            // down state
-      this.pressed = 0;             // pressed time
-      this.isReleased = function(){ // check if the key was just released
-        return !this.down && this.pressed!=0
-      };
+      this.down = false;
+      this.startTime = 0;
+      this.finalTime = 0;
+    };
+    //the Move object
+    var Move = function(){
+      this.sequence = [],
+      this.callback = function(){};
     };
     var keys = {                        //the avalaible keys
                 UP: new Key(),
@@ -32,11 +35,10 @@
         canvas = null,                  //the canvas object
         kdCallback = function( keys ){},//key down callback function
         kuCallback = function( keys ){},//key up callback function
-        customThread = false,           //true if the scanKeys function is managed by another tread
         allowsHistory = true,           //allows the history functions, required for the moves function
         history = [],                   //register of the last key ups
         maxHistory = 10,                //maximun keys allowed in the history array
-        maxTime = 100,                  //time a key is in the history, in loop cycles
+        maxTime = 1000,                 //time a key is in the history, in miliseconds
         moveList = [],                  //a list with the moves registered
         minimalList = maxHistory;       //minimal keys in the history neccesary to do a move inspection
 
@@ -52,58 +54,33 @@
 
     var keyDowns = function(e){
       var key = e.keyCode ? e.keyCode : e.which;
-      mapping(key, true);
+      if(key in mapKeys){
+        key = keys[mapKeys[key]];
+        if(!key.down){
+          key.down = true;
+          key.startTime = new Date().getTime();
+          key.finalTime = 0;
+        }
+        kdCallback(keys);
+      }
       e.preventDefault();
     };
 
     var keyUps = function(e){
-      var key = e.keyCode ? e.keyCode : e.which;
-      mapping(key, false);
+      var key = e.keyCode ? e.keyCode : e.which,
+          localKeys = {};
       e.preventDefault();
-    };
-
-    var scanKeys = function(){
-      var callUp = false,
-          callDown = false;
-
-      if(!customThread && arguments.callee.caller.name !== 'gScanning'){
-        customThread = true;
-      }
-
-      for(key in keys){
-        if (!keys.hasOwnProperty(key)) continue;
-        callDown = callDown || keys[key].down;
-        callUp = callUp || keys[key].isReleased();
-        keys[key].pressed = keys[key].down ? keys[key].pressed+1 : keys[key].pressed;
-      }
-
-      if(callDown){
-        kdCallback(keys);
-      }
-
-      if(callUp){
-        var localKeys = {};
-        kuCallback(keys);
-        for(key in keys){
-          if (!keys.hasOwnProperty(key)) continue;
-
-          if(keys[key].isReleased()){
-            keys[key].pressed = 0;
-            if(allowsHistory){
-              localKeys[key] = maxTime;
-            }
-          }
-        }
-
+      mapping(key, false);
+      
+      if(key in mapKeys){
+        keys[mapKeys[key]].finalTime = new Date().getTime();
         if(allowsHistory){
+          localKeys[mapKeys[key]] = maxTime;
           addHistoryRecord(localKeys);
         }
+        kuCallback(keys);
       }
-      
-      if(allowsHistory){
-        cleanHistory();  
-      }
-    };
+    };    
 
     //history 
     var addHistoryRecord = function(localKeys){
@@ -128,11 +105,6 @@
     };
 
     //Moves
-    var Move = function(){
-      this.sequence = [],
-      this.callback = function(){};
-    };
-
     var registerMove = function(sequence, callback){
       var move = new Move(),
           added = false;
@@ -259,14 +231,6 @@
         }
       })();
 
-    
-    (function gScanning(){
-      if(!customThread){
-        scanKeys();
-        window.setTimeout(gScanning, 1000 / 60);
-      }
-    })();
-
     return {
       'keyDown': function( callback ){
         kdCallback = callback;
@@ -274,8 +238,8 @@
       'keyUp': function( callback ){
         kuCallback = callback;
       },
+      'keys': keys,
       'registerMove': registerMove,
-      'scanKeys': scanKeys,
       'history': history
     };
 

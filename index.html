@@ -78,7 +78,6 @@
             'RIGHT':'&rarr;',
             'SPACE':'&hearts;'
           },
-          pressedTime = 3,
           sky = {
             color:'rgba(0, 0, 5, 0.05)',
             stars:'rgba(255, 255, 255, 0.3)'
@@ -89,39 +88,39 @@
                      {color:'rgba(50, 0, 51, 0.05)', stars:'rgba(138, 255, 65, 0.3)'}],
           skyIndex = 0;
 
-      gKeys.keyDown(function(keys){
+      var keyValidate = function(keys){
         for(key in keys){
           document.getElementById(key+'d').innerHTML = keys[key].down;
-          document.getElementById(key+'u').innerHTML = keys[key].isReleased();
-          document.getElementById(key+'p').innerHTML = keys[key].pressed;
-          rowClass = keys[key].down && keys[key].pressed > 15 ?'pressed':'';
+          document.getElementById(key+'u').innerHTML = keys[key].startTime;
+          document.getElementById(key+'p').innerHTML = keys[key].finalTime;
+          rowClass = keys[key].down ?'pressed':'';
           document.getElementById(key).setAttribute('class', rowClass);
         }
-        if(keys.DOWN.down && keys.DOWN.pressed>pressedTime){
+        if(keys.DOWN.down){
           y += speed;
           if(y > 300){
             y = -30;
           }
         }
-        if(keys.UP.down && keys.UP.pressed>pressedTime){
+        if(keys.UP.down){
           y -= speed;
           if(y < -30){
             y = 300;
           }
         }
-        if(keys.LEFT.down && keys.LEFT.pressed>pressedTime){
+        if(keys.LEFT.down){
           x -= speed;
           if(x < -30){
             x = 400;
           }
         }
-        if(keys.RIGHT.down && keys.RIGHT.pressed>pressedTime){
+        if(keys.RIGHT.down){
           x += speed;
           if(x > 400){
             x = -30;
           }
         }
-        if(keys.SPACE.down && keys.SPACE.pressed>pressedTime){
+        if(keys.SPACE.down){
           var cr = Math.floor(Math.random()*255);
           var cg = Math.floor(Math.random()*255);
           var cb = Math.floor(Math.random()*255);
@@ -130,12 +129,12 @@
           speed = 6;
         }
         moveSky(keys);
-      });
-      gKeys.keyUp(function(keys){
+      };
+      var keyValidateUp = function(keys){
         for(key in keys){
           document.getElementById(key+'d').innerHTML = keys[key].down;
-          document.getElementById(key+'u').innerHTML = keys[key].isReleased();
-          document.getElementById(key+'p').innerHTML = keys[key].pressed;
+          document.getElementById(key+'u').innerHTML = keys[key].startTime;
+          document.getElementById(key+'p').innerHTML = keys[key].finalTime;
           if(!keys[key].down){
             document.getElementById(key).setAttribute('class', '');
           }
@@ -143,7 +142,7 @@
         if(!keys.SPACE.down){
           speed = 3;
         }
-      });
+      };
       var hadouken = function(){
         //create a wave!
         waves.splice(0, 0, {x:x+15, y: y+15, color:color, radius:0});
@@ -248,7 +247,8 @@
     ctx.fillRect (0, 0, 400, 300);
     
     (function animloop(){
-      gKeys.scanKeys();
+      //gKeys.scanKeys();
+      keyValidate(gKeys.keys);
       ctx.fillStyle = sky.color;
       ctx.fillRect(0, 0, 400, 300);
       drawSky(ctx);
