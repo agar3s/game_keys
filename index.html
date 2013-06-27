@@ -92,7 +92,7 @@
       gKeys.keyDown(function(keys){
         for(key in keys){
           document.getElementById(key+'d').innerHTML = keys[key].down;
-          document.getElementById(key+'u').innerHTML = keys[key].up;
+          document.getElementById(key+'u').innerHTML = keys[key].isReleased();
           document.getElementById(key+'p').innerHTML = keys[key].pressed;
           rowClass = keys[key].down && keys[key].pressed > 15 ?'pressed':'';
           document.getElementById(key).setAttribute('class', rowClass);
@@ -134,13 +134,13 @@
       gKeys.keyUp(function(keys){
         for(key in keys){
           document.getElementById(key+'d').innerHTML = keys[key].down;
-          document.getElementById(key+'u').innerHTML = keys[key].up;
+          document.getElementById(key+'u').innerHTML = keys[key].isReleased();
           document.getElementById(key+'p').innerHTML = keys[key].pressed;
-          if(keys[key].up){
+          if(!keys[key].down){
             document.getElementById(key).setAttribute('class', '');
           }
         }
-        if(keys.SPACE.up){
+        if(!keys.SPACE.down){
           speed = 3;
         }
       });

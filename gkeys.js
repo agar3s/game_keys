@@ -3,9 +3,11 @@
   var gKeys = function(){
     //the Key object
     var Key = function(){
-      this.down = false; //down state
-      this.up = false; //up state
-      this.pressed = 0;     //pressed time
+      this.down = false;            // down state
+      this.pressed = 0;             // pressed time
+      this.isReleased = function(){ // check if the key was just released
+        return !this.down && this.pressed!=0
+      };
     };
     var keys = {                        //the avalaible keys
                 UP: new Key(),
@@ -45,7 +47,6 @@
     var mapping = function( key, down ){
       if(key in mapKeys){
         keys[mapKeys[key]].down = down;
-        keys[mapKeys[key]].up = !down;
       }
     };
 
@@ -71,9 +72,9 @@
 
       for(key in keys){
         if (!keys.hasOwnProperty(key)) continue;
-        keys[key].pressed = keys[key].down ? keys[key].pressed+1 : keys[key].pressed;
         callDown = callDown || keys[key].down;
-        callUp = callUp || keys[key].up;
+        callUp = callUp || keys[key].isReleased();
+        keys[key].pressed = keys[key].down ? keys[key].pressed+1 : keys[key].pressed;
       }
 
       if(callDown){
@@ -86,8 +87,7 @@
         for(key in keys){
           if (!keys.hasOwnProperty(key)) continue;
 
-          if(keys[key].up){
-            keys[key].up = false;
+          if(keys[key].isReleased()){
             keys[key].pressed = 0;
             if(allowsHistory){
               localKeys[key] = maxTime;

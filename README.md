@@ -36,21 +36,22 @@ A key is an object with the information about the state of the key:
 
 ```javascript
     var Key = function(){
-    	this.down = false;    //down state
-    	this.up = false;      //up state
-    	this.pressed = 0;     //pressed time
+        this.down = false;                          // down state
+        this.pressed = 0;                           // pressed time
+        this.isReleased = function(){               // check if the key was just released
+            return !this.down && this.pressed!=0
+        };
     };
 ```
 
 The **key.down** is a boolean with the down state of the key, while the key is pressed 
-the **key.down** will be true.
+the **key.down** will be true otherwise its value will be false.
 
-The **key.up** is a boolean with the up state of the key, once the key is released 
-the **key.up** will be true, otherwise the **key.up** property will be false.
-
-Finally the **key.pressed** is an int value, that counts how many cycles the key has been 
+The **key.pressed** is an int value, that counts how many cycles the key has been 
 pressed, its value is incremented while the **key.down** is true, it stops the count 
 when the key.up is false, then its value returns to 0.
+
+The **key.isReleased** is a function that evaluates if the key was just released.
 
 
 ### Key Down events
@@ -60,9 +61,9 @@ you need to pass a callback function that recieves the state of the keys as a js
 
 ```javascript
 gKeys.keyDown(function(keys){
-	console.log("key LEFT down: " + keys.LEFT.down);
-	console.log("key LEFT up: " + keys.LEFT.up);
-	console.log("key LEFT pressed time: " + keys.LEFT.pressed);
+    console.log("key LEFT down: " + keys.LEFT.down);
+    console.log("key LEFT up: " + keys.LEFT.up);
+    console.log("key LEFT pressed time: " + keys.LEFT.pressed);
 });
 ```
 
@@ -80,9 +81,9 @@ A keyup event is triggered when a mapping key is pressed. and works like the key
 
 ```javascript
 gKeys.keyUp(function(keys){
-	console.log("key LEFT down: " + keys.LEFT.down);
-	console.log("key LEFT up: " + keys.LEFT.up);
-	console.log("key LEFT pressed time: " + keys.LEFT.pressed);
+    console.log("key LEFT down: " + keys.LEFT.down);
+    console.log("key LEFT up: " + keys.LEFT.up);
+    console.log("key LEFT pressed time: " + keys.LEFT.pressed);
 });
 ```
 
@@ -97,10 +98,10 @@ the **gKeys.scanKeys()** function into the loop:
 ```javascript
 // your game loop 
     (function animloop(){
-    	...
-    	gKeys.scanKeys(); //just add this
-    	...
-    	requestAnimFrame(animloop);
+        ...
+        gKeys.scanKeys(); //just add this
+        ...
+        requestAnimFrame(animloop);
     })();
 ```
 
@@ -159,7 +160,7 @@ moves as you like.
 
 ```javascript
 gKeys.registerMove(['DOWN', 'RIGHT', 'SPACE'], function(){
-	console.log("HADOUKEN!!!!");
+    console.log("HADOUKEN!!!!");
 });
 ```
 
